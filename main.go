@@ -45,35 +45,34 @@ type httpAuthRandom struct {
 }
 
 // Override types.DefaultPluginContext.
-func (ctx *pluginContext) OnPluginStart(pluginConfigurationSize int) types.OnPluginStartStatus {
-	if err := proxywasm.SetTickPeriodMilliSeconds(tickMilliseconds); err != nil {
-		proxywasm.LogCriticalf("failed to set tick period: %v", err)
-		return types.OnPluginStartStatusFailed
-	}
-	proxywasm.LogInfof("set tick period milliseconds: %d", tickMilliseconds)
-	ctx.callBack = func(numHeaders, bodySize, numTrailers int) {
-		respHeaders, _ := proxywasm.GetHttpCallResponseHeaders()
-		proxywasm.LogInfof("respHeaders: %v", respHeaders)
-
-		for _, headerPairs := range respHeaders {
-			if headerPairs[0] == "authorization" {
-				authHeader = headerPairs[1]
-			}
-		}
-	}
-	return types.OnPluginStartStatusOK
-}
+//func (ctx *pluginContext) OnPluginStart(pluginConfigurationSize int) types.OnPluginStartStatus {
+//	if err := proxywasm.SetTickPeriodMilliSeconds(tickMilliseconds); err != nil {
+//		proxywasm.LogCriticalf("failed to set tick period: %v", err)
+//		return types.OnPluginStartStatusFailed
+//	}
+//	proxywasm.LogInfof("set tick period milliseconds: %d", tickMilliseconds)
+//	ctx.callBack = func(numHeaders, bodySize, numTrailers int) {
+//		respHeaders, _ := proxywasm.GetHttpCallResponseHeaders()
+//		proxywasm.LogInfof("respHeaders: %v", respHeaders)
+//
+//		for _, headerPairs := range respHeaders {
+//			if headerPairs[0] == "authorization" {
+//				authHeader = headerPairs[1]
+//			}
+//		}
+//	}
+//	return types.OnPluginStartStatusOK
+//}
 
 func (ctx *httpAuthRandom) OnHttpResponseHeaders(int, bool) types.Action {
 	proxywasm.AddHttpResponseHeader("x-wasm-filter", "hello from wasm")
-	proxywasm.AddHttpResponseHeader("x-auth", authHeader)
+	//proxywasm.AddHttpResponseHeader("x-auth", authHeader)
 
 	return types.ActionContinue
 }
 
 func (ctx *httpAuthRandom) OnHttpRequestHeaders(numHeaders int, endOfStream bool) types.Action {
-	proxywasm.AddHttpRequestHeader("x-wasm-filter", "hello from wasm")
-	proxywasm.AddHttpRequestHeader("x-auth", authHeader)
+	proxywasm.AddHttpRequestHeader("x-wasm-filter", "hello from wasm req")
 	return types.ActionContinue
 }
 
